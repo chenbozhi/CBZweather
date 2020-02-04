@@ -1,6 +1,7 @@
 package com.CBZweather.android;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,32 +38,34 @@ import static com.CBZweather.android.util.HttpUtil.sendOKHttpRequest;
 
 public class ChooseAreaFragment extends Fragment {
 
-    public static final int LEAVE_PROVINCE = 0;
-    public static final int LEAVE_CITY = 1;
-    public static final int LEAVE_COUNTY = 2;
-
     private ProgressDialog progressDialog;
 
-    private TextView titleText;
+    private TextView titleText;   //显示上一级名称
 
-    private Button backButton;
+    private Button backButton;  //返回按钮
 
-    private ListView listView;
+    private ListView listView;  //显示省市县数据
 
-    private ArrayAdapter<String> arrayAdapter;
+    private ArrayAdapter<String> arrayAdapter;   //适配器，由于只需要显示名字，泛型用String就好了
 
-    private List<String> dataList = new ArrayList<>();
+    private List<String> dataList = new ArrayList<>();   //用于保存省市县数据
 
 
     private List<Province> provinceList; //省列表
     private List<City> cityList;      //市列表
     private List<County> countyList;  //县列表
 
-    private Province selectedProvince = new Province();
+    private Province selectedProvince = new Province();   //当点击省列表某个省后，保存这个省
 
-    private City selectedCity = new City() ;
+    private City selectedCity = new City() ;   //当点击市列表某个市后，保存这个市
 
-    private int currentLeavel;
+
+
+    public static final int LEAVE_PROVINCE = 0;  //这三个常量分别表示省级，市级，县级
+    public static final int LEAVE_CITY = 1;
+    public static final int LEAVE_COUNTY = 2;
+
+    private int currentLeavel;   //表示当前处于哪个等级， 有上面三个常量可选
 
     @Nullable
     @Override
@@ -93,6 +96,14 @@ public class ChooseAreaFragment extends Fragment {
                 {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }
+                else if(currentLeavel == LEAVE_COUNTY)
+                {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    //getActivity().finish();
                 }
             }
         });
@@ -189,8 +200,8 @@ public class ChooseAreaFragment extends Fragment {
     //根据地址和类型查询数据
     private void queryFromServer(String address, final String type)
     {
-        //showProgressDialog();
-        sendOKHttpRequest(address, new Callback() {
+        showProgressDialog();
+        HttpUtil.sendOKHttpRequest(address, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -217,7 +228,7 @@ public class ChooseAreaFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {  //更新UI
                         @Override
                         public void run() {
-                            //closeProgressDialog();
+                            closeProgressDialog();
                             if("province".equals(type))
                             {
                                 queryProvinces();

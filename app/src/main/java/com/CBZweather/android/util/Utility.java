@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.CBZweather.android.db.City;
 import com.CBZweather.android.db.County;
 import com.CBZweather.android.db.Province;
+import com.CBZweather.android.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,10 +15,6 @@ import org.json.JSONObject;
 public class Utility {
 
     //解析处理省级数据,会
-    // //将解析的数据保存在数据库中
-
-    //设置了provinceCode，
-    // 和name
     public static boolean handleProvinceResponse(String response)
     {
         if(!TextUtils.isEmpty(response))
@@ -40,11 +38,6 @@ public class Utility {
     }
 
     //解析处理市级数据
-
-    // //将解析的数据保存在数据库中
-
-    //用到的字段有 cityCode， name 和provinceId
-
     public static boolean handleCityResponse(String response, int provinceId)
     {
         if(!TextUtils.isEmpty(response))
@@ -69,10 +62,6 @@ public class Utility {
     }
 
     //解析处理县级数据
-
-    // //将解析的数据保存在数据库中
-
-    //用到了name， weatherid 和cityId
     public static boolean handleCountyResponse(String response, int cityId)
     {
         if(!TextUtils.isEmpty(response))
@@ -94,5 +83,21 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    //解析天气数据
+    public static Weather handleWeatherResponse(String response)
+    {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+
+            return new Gson().fromJson(weatherContent, Weather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
