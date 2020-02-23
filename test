@@ -1,4 +1,4 @@
-```java
+`java
 package com.cbzgame.mygamelongtouch;
 
 import android.annotation.SuppressLint;
@@ -124,4 +124,4 @@ public class GobangView extends View {
          **/
     }
 }
-```
+``
