@@ -1,0 +1,127 @@
+```java
+package com.cbzgame.mygamelongtouch;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+
+//这个就是来画棋盘
+public class GobangView extends View {
+
+    protected static int GRID_SIZE = 10;  //横纵格子数
+
+    protected static int GRID_WIDTH = 30; // 棋盘格的宽度
+    protected static int CHESS_DIAMETER = 26; // 棋子的直径
+
+    protected static int mStartX;// 棋盘定位的左上角X
+    protected static int mStartY;// 棋盘定位的左上角Y
+
+    private Bitmap[] mChessBW; // 黑棋和白棋
+    private static int[][] mGridArray; // 网格
+
+    int mGameState = GAMESTATE_RUN; //游戏阶段：0=尚未游戏，1=正在进行游戏，2=游戏结束
+    static final int GAMESTATE_PRE = 0;
+    static final int GAMESTATE_RUN = 1;
+    static final int GAMESTATE_PAUSE = 2;
+    static final int GAMESTATE_END = 3;
+
+    int wbflag = 1; //该下白棋了=2，该下黑棋了=1. 这里先下黑棋
+    private final int BLACK=1;
+    private final int WHITE=2;
+
+    //构造方法，不知道会调用哪一个，所以三个都加上:
+    public GobangView(Context context) {
+        super(context);
+        this.setFocusable(true);  //设置获取焦距
+        this.setFocusableInTouchMode(true);   //设置可以触摸
+    }
+     public GobangView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        this.setFocusable(true);  //设置获取焦距
+        this.setFocusableInTouchMode(true);   //设置可以触摸
+     }
+     public GobangView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.setFocusable(true);  //设置获取焦距
+        this.setFocusableInTouchMode(true);   //设置可以触摸
+     }
+
+     //初始化游戏，要在构造方法中调用
+    @SuppressLint("WrongCall")
+    private void initGame()
+    {
+        Canvas canvas = new Canvas();
+        onDraw(canvas);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        mStartX = w / 2 - GRID_SIZE * GRID_WIDTH / 2;
+        mStartY = h / 2 - GRID_SIZE * GRID_WIDTH / 2;
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
+
+        canvas.drawColor(Color.rgb(225, 182, 154));  //首先设置棋盘的颜色
+
+        // 画棋盘
+        {
+            @SuppressLint("DrawAllocation")
+            Paint paintRect = new Paint();
+            paintRect.setColor(Color.GRAY);
+            paintRect.setStrokeWidth(2);
+            paintRect.setStyle(Paint.Style.STROKE);
+
+            for (int i = 0; i < GRID_SIZE; i++)
+            {
+                for(int j = 0; j < GRID_SIZE; j++)
+                {
+                    int mLeft = i * GRID_WIDTH + mStartX;
+                    int mTop = j * GRID_WIDTH + mStartY;
+                    int mRright = mLeft + GRID_WIDTH;
+                    int mBottom = mTop + GRID_WIDTH;
+                    canvas.drawRect(mLeft, mTop, mRright, mBottom, paintRect);
+                }
+            }
+
+            //画棋盘的外边框
+            paintRect.setStrokeWidth(4);
+            canvas.drawRect(mStartX, mStartY, mStartX + GRID_WIDTH*GRID_SIZE, mStartY + GRID_WIDTH*GRID_SIZE, paintRect);
+        }
+
+        //画棋子
+        /**
+        for (int i = 0; i < GRID_SIZE-1; i++) {
+            for (int j = 0; j < GRID_SIZE-1; j++) {
+                if(mGridArray[i][j] == BLACK){
+
+                    //通过圆形来画
+                    {
+                        Paint paintCircle = new Paint();
+                        paintCircle.setColor(Color.BLACK);
+                        canvas.drawCircle(mStartX + (i+1) * GRID_WIDTH, mStartY + (j+1)* GRID_WIDTH, CHESS_DIAMETER/2, paintCircle);
+                    }
+
+                }else if(mGridArray[i][j] == WHITE){
+
+                    //通过圆形来画
+                    {
+                        Paint paintCircle = new Paint();
+                        paintCircle.setColor(Color.WHITE);
+                        canvas.drawCircle(mStartX + (i+1) * GRID_WIDTH, mStartY + (j+1)* GRID_WIDTH, CHESS_DIAMETER/2, paintCircle);
+                    }
+                }
+            }
+        }
+         **/
+    }
+}
+```
