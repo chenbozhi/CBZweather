@@ -103,7 +103,7 @@ public class GobangView extends View {
             for (int j = 0; j < GRID_SIZE-1; j++) {
                 if(mGridArray[i][j] == BLACK){
 
-                    //通过圆形来画
+                    //通过圆形来 画 
                     {
                         Paint paintCircle = new Paint();
                         paintCircle.setColor(Color.BLACK);
